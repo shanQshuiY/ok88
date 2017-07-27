@@ -1,4 +1,7 @@
+# -*- coding: gbk -*-
 import scrapy
+import re
+
 
 class Ok88Spider(scrapy.Spider):
 
@@ -8,19 +11,14 @@ class Ok88Spider(scrapy.Spider):
 
     def parse(self, response):
 
-        #a[contains(@href, "image")]
-        #all_links = response.xpath('//a/@href')
-        #driver.find_element_by_xpath("//a[contains(@id,'url_165')]")
         all_links = response.xpath('//a[contains(@id,"url_")]/text()')
+        link = "http://www.ok88ok88.com/read.php?tid=98531&uid=1"
+        yield scrapy.Request(link, callback=self.parse_dir_contents)
+        # for link in all_links:
+        #     if link.re(r'http://w{0,3}\.?ok88ok88.com/read\.php\?tid=\d{2,5}$'):
+        #         yield scrapy.Request(link.extract() + "&uid=1", callback=self.parse_dir_contents)
 
-        for link in all_links:
-            #print link.extract()
-            if  link.re(r'http://w{0,3}\.?ok88ok88.com/read\.php\?tid=\d{2,5}$'):
-                yield scrapy.Request(link.extract(), callback=self.parse_dir_contents)
-            #print link.re(r"http://www.ok88ok88.com/read.php?tid=.*")
-            # if link.re(r"http://www.ok88ok88.com/read.php?tid=.*"):
-            #     print link.extract()
-            # else:
-            #     print "Not a needed page!"
     def parse_dir_contents(self, response):
-        print "get url" + response.url
+        #print response.body.decode('gbk')
+        print response.xpath('//meta[contains(@name,"keywords")]/@content').extract_first()
+
