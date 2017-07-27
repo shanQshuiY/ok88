@@ -15,7 +15,7 @@ class Ok88Spider(scrapy.Spider):
 
         for link in all_links:
             #print link.extract()
-            if  link.re(r'http://w{0,3}\.?ok88ok88.com/read\.php\?tid=\d{2,5}$') is not None:
+            if  link.re(r'http://w{0,3}\.?ok88ok88.com/read\.php\?tid=\d{2,5}$'):
                 yield scrapy.Request(link.extract(), callback=self.parse_dir_contents)
             #print link.re(r"http://www.ok88ok88.com/read.php?tid=.*")
             # if link.re(r"http://www.ok88ok88.com/read.php?tid=.*"):
