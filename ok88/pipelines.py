@@ -41,6 +41,7 @@ class MakeHtmlPipeline(object):
     def process_item(self, item, spider):
 
         dirname = os.getcwd() + "\\lingzhuzi\\" + item['title']
+        print dirname
         self.my_mkdir(dirname)
         filedir = dirname + "/" + "image_files" + "/"
         imagedir = filedir
@@ -48,19 +49,12 @@ class MakeHtmlPipeline(object):
         #<base id="headbase" href="http://www.ok88ok88.com/" />
         needreplace = '<base id="headbase" href="http://www.ok88ok88.com/" />'
         replacebase = '<base href=".">'
-        if item['htmlbody'].find(needreplace.encode('gbk')):
-            print "find base"
         item['htmlbody'] = item['htmlbody'].replace(needreplace.encode('gbk'), replacebase.encode('gbk'))
-        print item['htmlbody']
         for imgpath in item['image_paths']:
             src = get_project_settings().get('IMAGES_STORE') + "/" + imgpath[0]
             des = filedir + "/" + imgpath[0].split('/')[1]
-            print src
-            print des
             shutil.copy(src, des)
-
             htmlimage = "image_files" + "/" + imgpath[0].split('/')[1]
-            print htmlimage
             item['htmlbody'] = item['htmlbody'].replace(imgpath[1].encode('gbk'), htmlimage.encode('gbk'))
 
         with open(dirname + "\\" + item['title'] + ".html", 'w') as htmlfile:
