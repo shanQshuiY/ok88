@@ -1,6 +1,6 @@
 # -*- coding: gbk -*-
 import scrapy
-import re
+from ok88.items import Ok88Item
 
 
 class Ok88Spider(scrapy.Spider):
@@ -20,5 +20,11 @@ class Ok88Spider(scrapy.Spider):
 
     def parse_dir_contents(self, response):
         #print response.body.decode('gbk')
-        print response.xpath('//meta[contains(@name,"keywords")]/@content').extract_first()
+        item = Ok88Item()
+        item['title'] = response.xpath('//meta[contains(@name,"keywords")]/@content').extract_first()
+        links = response.xpath('//div[contains(@class,"tpc_content")]//img/@src')
+        item['image_urls'] = links.extract()
+        item['htmlbody'] = response.body.decode('gbk')
+
+        yield item
 

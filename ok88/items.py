@@ -7,8 +7,11 @@
 
 import scrapy
 
-
 class Ok88Item(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
-    pass
+    image_urls = scrapy.Field()
+    title = scrapy.Field()
+    image_paths = scrapy.Field()
+    htmlbody = scrapy.Field()
+    #pass

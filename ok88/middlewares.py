@@ -54,3 +54,20 @@ class Ok88SpiderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
+
+import random
+
+
+class MyRandomUserAgent(object):
+
+    def __init__(self, agents):
+        self.agents = agents
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(crawler.settings.getlist('USER_AGENTS'))
+
+    def process_request(self, request, spider):
+        agent =  random.choice(self.agents)
+        request.headers.setdefault('User-Agent',agent)
+        print "set user-agent:" + agent
