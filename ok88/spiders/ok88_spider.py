@@ -1,4 +1,4 @@
-# -*- coding: gbk -*-
+# -*- coding: utf-8 -*-
 import scrapy
 from ok88.items import Ok88Item
 
@@ -24,7 +24,7 @@ class Ok88Spider(scrapy.Spider):
         item['title'] = response.xpath('//meta[contains(@name,"keywords")]/@content').extract_first()
         links = response.xpath('//div[contains(@class,"tpc_content")]//img/@src')
         item['image_urls'] = links.extract()
-        item['htmlbody'] = response.body.decode('gbk')
+        item['htmlbody'] = response.body
 
         yield item
 
