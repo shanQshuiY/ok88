@@ -70,4 +70,4 @@ class MyRandomUserAgent(object):
     def process_request(self, request, spider):
         agent =  random.choice(self.agents)
         request.headers.setdefault('User-Agent',agent)
-        print "set user-agent:" + agent
+        #print "set user-agent:" + agent

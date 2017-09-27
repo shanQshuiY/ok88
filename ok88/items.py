@@ -14,4 +14,5 @@ class Ok88Item(scrapy.Item):
     title = scrapy.Field()
     image_paths = scrapy.Field()
     htmlbody = scrapy.Field()
+    response = scrapy.Field()
     #pass
