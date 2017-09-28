@@ -44,6 +44,8 @@ class SaveDBPipeline(object):
         image_span = response.xpath('//div[contains(@class,"f14")]/font/span/span')
         image_span_sp = response.xpath('//div[contains(@class,"f14")]/span')
         image_span.extend(image_span_sp)
+        if not image_span and not image_span_sp:
+            image_span = response.xpath('//div[contains(@class,"f14")]/font/span')
         image_span_detail = response.xpath('//div[contains(@class,"f14")]/font/span')
 
 
@@ -65,10 +67,10 @@ class SaveDBPipeline(object):
         for link in image_span:
             # get img url
             img_link = link.xpath('img/@src')
-            img_src = img_link != None and img_link.extract() or ''
+            img_src = img_link != None and img_link.extract_first() or ''
             # get dedescription
             description_link = link.xpath('b/text()')
-            img_description = description_link != None and description_link.extract() or ''
+            img_description = description_link != None and description_link.extract_first() or ''
             # add in the list
             article_contents.append({'img':img_src, 'content':img_description})
 

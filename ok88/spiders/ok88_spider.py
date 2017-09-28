@@ -18,7 +18,7 @@ class Ok88Spider(scrapy.Spider):
         # print 'all links:'
         # print  len(all_links)
         # count = 0
-        all_links = response.xpath('//a[contains(@href,"95336")]/text()')
+        #all_links = response.xpath('//a[contains(@href,"9506")]/text()')
         for link in all_links:
             if link.re(r'http://w{0,3}\.?ok88ok88.com/read\.php\?tid=\d{2,5}$'):
                 # count = count + 1
@@ -29,7 +29,7 @@ class Ok88Spider(scrapy.Spider):
         #print response.body.decode('gbk')
         item = Ok88Item()
         #item['title'] = response.xpath('//meta[contains(@name,"keywords")]/@content').extract_first().encode('utf-8')
-        item['title'] = response.xpath('//head/title/text()').extract_first().encode('utf-8').replace("|≌≌阴宅风水≌≌ - 龙行天下风水论坛 中国风水品牌论坛 最佳的风水交流学习平台 - Powered by PHPWind.net", "")
+        item['title'] = response.xpath('//head/title/text()').extract_first().encode('utf-8').replace("- 龙行天下风水论坛 中国风水品牌论坛 最佳的风水交流学习平台 - Powered by PHPWind.net", "")
         links = response.xpath('//div[contains(@class,"f14")]//img/@src')
         item['image_urls'] = links.extract()
         item['htmlbody'] = response.body
