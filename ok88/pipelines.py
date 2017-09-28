@@ -35,67 +35,69 @@ import MySQLdb
 import re
 from scrapy.utils.project import get_project_settings
 
+
 class SaveDBPipeline(object):
+
     def process_item(self, item, spider):
+
         response = item['response']
-        links = response.xpath('//div[contains(@class,"f14")]/font/span/span')
-        links2 = response.xpath('//div[contains(@class,"f14")]/font/span')
-        #f = "</span><br/>图2，此图摄于2014年，当时坐船游西湖，远视诸山，只嫌雾霾不清，但仿佛见此处星体端正，是九星中之吉星，知其间应有佳壤，但想一是景区之内，二是没时间去探访，远远看一下就算了，当然此时未意识到这里在【地理人子须知】中有记载。<br/><br/<span"
-        #p1 =  r'</span>(.*?<span|.*?</span>){1}'
-        #p1 =  r'</span>.*?</?span'
+        image_span = response.xpath('//div[contains(@class,"f14")]/font/span/span')
+        image_span_sp = response.xpath('//div[contains(@class,"f14")]/span')
+        image_span.extend(image_span_sp)
+        image_span_detail = response.xpath('//div[contains(@class,"f14")]/font/span')
+
+
+        # use to get description in span.
         p1 =  r'</span>(.*?)</?span'
         pattern1 = re.compile(p1)
 
         content_list = list()
-        for link in links2:
-
+        # get description from span
+        for link in image_span_detail:
             strlink = (link.extract())
-            #print strlink
             find = pattern1.findall(strlink)
-            # if find:
-            #     print ''.join(find)
-            # else:
-            #     print 'not match'
             for fi in find:
                 fi = fi.replace('<br>', '')
-                fi = fi.replace('</br>', '')
+                fi = fi.replace('</br>', '##br##')
                 content_list.append(fi)
-        article_contents = [{'img':link.xpath('img/@src').extract(), 'content': link.xpath('b/text()').extract_first().encode('utf-8')} for link in links]
 
-        # for link in links:
-        #     print ''.join(link.xpath('b/text()').extract())
-        contenttemp = ''
-        for content in article_contents:
-            contenttemp = content['content']
-            content['content'] = content['content'];
+        article_contents = list()
+        for link in image_span:
+            # get img url
+            img_link = link.xpath('img/@src')
+            img_src = img_link != None and img_link.extract() or ''
+            # get dedescription
+            description_link = link.xpath('b/text()')
+            img_description = description_link != None and description_link.extract() or ''
+            # add in the list
+            article_contents.append({'img':img_src, 'content':img_description})
 
+        # add the detail description to the description
         count = len(article_contents) < len(content_list) and len(article_contents) or len(content_list)
         for i in range(0, count):
-            #article_contents[i]['content'] += ('{#br#}' + content_list[i])
-            pass
-        db = MySQLdb.connect("localhost", "root", "", "samp_db")
+            article_contents[i]['content'] += ("{#br#}" + content_list[i])
 
-        article_content_str = json.dumps(article_contents, ensure_ascii=False)
 
-        print article_content_str
+        db = MySQLdb.connect( "localhost", "root" , "" , "samp_db" )
+
         cursor = db.cursor()
         cursor.execute("SET NAMES utf8")
-        # sql = 'INSERT INTO `article`'
-        # sql = sql + '(`article_title`,`article_content`)'
-        # sql = sql + 'VALUES(`' + ''.join(item['title']) + '`,`' + article_content_str + '`);'
+
+        article_content_str = json.dumps(article_contents, ensure_ascii=False)
 
         sql = "INSERT INTO article \
               (`article_title`,`article_content`) \
               VALUES('%s', '%s');" % (item['title'], article_content_str.encode('utf-8'))
 
-        print 'sql:' + sql
+        #print 'sql:' + sql
         # 执行sql语句
         cursor.execute(sql)
         # 提交到数据库执行
         db.commit()
 
+        # test data is ok
         sql = "SELECT * FROM article \
-               WHERE article_id = '%d'" % (178)
+               WHERE article_id = '%d'" % (410)
         # 执行SQL语句
         cursor.execute(sql)
         # 获取所有记录列表
@@ -105,8 +107,8 @@ class SaveDBPipeline(object):
                 print "id = %s, title=%s, content =%s\n" % \
                       (row[0], row[1], row[2])
                 jsondata = json.loads(row[2], encoding="utf-8")
-                print ''.join(jsondata[2]['content'])
-            db.close()
+                #print ''.join(jsondata[0]['content'])
+        db.close()
         return item
 
 class MakeHtmlPipeline(object):
