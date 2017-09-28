@@ -67,18 +67,19 @@ class SaveDBPipeline(object):
         contenttemp = ''
         for content in article_contents:
             contenttemp = content['content']
-            content['content'] = content['content'].decode('utf-8');
+            content['content'] = content['content'];
 
         count = len(article_contents) < len(content_list) and len(article_contents) or len(content_list)
         for i in range(0, count):
-            article_contents[i]['content'] += ('{#br#}' + content_list[i])
-            #pass
+            #article_contents[i]['content'] += ('{#br#}' + content_list[i])
+            pass
         db = MySQLdb.connect("localhost", "root", "", "samp_db")
-        db.set_character_set('utf8')
+
         article_content_str = json.dumps(article_contents, ensure_ascii=False)
 
         print article_content_str
         cursor = db.cursor()
+        cursor.execute("SET NAMES utf8")
         # sql = 'INSERT INTO `article`'
         # sql = sql + '(`article_title`,`article_content`)'
         # sql = sql + 'VALUES(`' + ''.join(item['title']) + '`,`' + article_content_str + '`);'
@@ -94,17 +95,17 @@ class SaveDBPipeline(object):
         db.commit()
 
         sql = "SELECT * FROM article \
-               WHERE article_id = '%d'" % (490)
+               WHERE article_id = '%d'" % (178)
         # 执行SQL语句
         cursor.execute(sql)
         # 获取所有记录列表
         results = cursor.fetchall()
         if results:
             for row in results:
-                print "id = %s, title=%s, content =%s" % \
+                print "id = %s, title=%s, content =%s\n" % \
                       (row[0], row[1], row[2])
                 jsondata = json.loads(row[2], encoding="utf-8")
-                print ''.join(jsondata[0]['content'].decode('gbk'))
+                print ''.join(jsondata[2]['content'])
             db.close()
         return item
 
