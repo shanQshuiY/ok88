@@ -66,7 +66,7 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    #'ok88.pipelines.MyImagesPipeline': 1,
+    'ok88.pipelines.MyImagesPipeline': 1,
     #'ok88.pipelines.MakeHtmlPipeline': 800,
     'ok88.pipelines.SaveDBPipeline': 200,
 }

@@ -39,11 +39,16 @@ from scrapy.utils.project import get_project_settings
 class SaveDBPipeline(object):
 
     def process_item(self, item, spider):
-
+        # no images, the src html is bad.
+        if len(item['image_urls']) == 0:
+            raise DropItem("No Image in the list");
+        # get the src html link
         response = item['response']
         image_span = response.xpath('//div[contains(@class,"f14")]/font/span/span')
         image_span_sp = response.xpath('//div[contains(@class,"f14")]/span')
         image_span.extend(image_span_sp)
+
+        # some pages the paten is not normal
         if not image_span and not image_span_sp:
             image_span = response.xpath('//div[contains(@class,"f14")]/font/span')
         image_span_detail = response.xpath('//div[contains(@class,"f14")]/font/span')
@@ -68,6 +73,7 @@ class SaveDBPipeline(object):
             # get img url
             img_link = link.xpath('img/@src')
             img_src = img_link != None and img_link.extract_first() or ''
+            img_src = r'static/image/' + img_src.split('/')[-1]
             # get dedescription
             description_link = link.xpath('b/text()')
             img_description = description_link != None and description_link.extract_first() or ''
@@ -81,7 +87,6 @@ class SaveDBPipeline(object):
 
 
         db = MySQLdb.connect( "localhost", "root" , "" , "samp_db" )
-
         cursor = db.cursor()
         cursor.execute("SET NAMES utf8")
 
@@ -93,7 +98,7 @@ class SaveDBPipeline(object):
 
         #print 'sql:' + sql
         # 执行sql语句
-        cursor.execute(sql)
+        #cursor.execute(sql)
         # 提交到数据库执行
         db.commit()
 
